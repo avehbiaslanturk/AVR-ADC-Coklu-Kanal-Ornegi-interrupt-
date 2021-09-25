@@ -22,7 +22,7 @@
 
 volatile uint8_t ADC_index = 0;
 volatile uint16_t ADC_Output[2];
-char buffer[2][7];
+char buffer[2][10]; // ADC 10 bit cozunurluge sahip oldugu icin 
 
 
 // Fonksiyon Prototipleri
@@ -36,7 +36,6 @@ ISR(ADC_vect) // ADC Conversion Complete interrupt
 	if(ADC_index == 0)  // Sira ADC0 okumasinda ise
 	{
 		ADMUX &= ~(15 << 0); // ADMUX bitlerini temizle, yani ADC0 secili
-
 	}
 
 
@@ -50,15 +49,14 @@ ISR(ADC_vect) // ADC Conversion Complete interrupt
 
 	if(ADC_index == 0) // ADC0 conversion islemi tamamlandi ise
 	{
-		ADC_Output[0] = (uint16_t)ADCW; // ADCWord register'indan veriyi al
+		ADC_Output[0] = ADCW; // ADCWord register'indan veriyi al
     	itoa(ADC_Output[0], buffer[0], sizeof(buffer[0])); // int veriyi string'e cevir ve buffer'a at
     	// Eger UART ile ilgili veriyi yazdirma islemimiz yoksa buna gerek yok
-
 	}
 
 	if(ADC_index == 1) // ADC1 conversion islemi tamamlandi ise
 	{
-		 ADC_Output[1] = (uint16_t)ADCW;
+		 ADC_Output[1] = ADCW;
 		 itoa(ADC_Output[1], buffer[1], sizeof(buffer[1]));   // ayni seyler
 	}
 
@@ -72,8 +70,8 @@ ISR(ADC_vect) // ADC Conversion Complete interrupt
 int main(void)
 {
 	sei(); //interrupt'lari aktive et
-    uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); // UART lib icin on tanim ayarlari
-    adc_setup();
+   	uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); // UART lib icin on tanim ayarlari
+   	adc_setup();
 
 
 	while(1)
